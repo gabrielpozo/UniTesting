@@ -4,13 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
 
     private val viewModelFactory = MainViewModelFactory(
-        GetBearerTokenUseCase()
+        GetBearerTokenUseCase(), TestCoroutineDispatcher()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

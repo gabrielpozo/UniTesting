@@ -2,14 +2,17 @@ package com.gabriel.unit_testing
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 
+@ExperimentalCoroutinesApi
 class MainViewModel(
     private val getBearerTokenUseCase: GetBearerTokenUseCase,
-    uiDispatcher: CoroutineDispatcher
-) : BaseViewModel(uiDispatcher) {
+    private val testCoroutineDispatcher: TestCoroutineDispatcher
+) : BaseViewModel(Dispatchers.Main) {
 
     sealed class SplashState {
         object RetrieveBearerToken : SplashState()
@@ -25,7 +28,7 @@ class MainViewModel(
     }
 
     fun onRetrieveBearerToken() {
-        launch {
+        launch(testCoroutineDispatcher) {
             getBearerTokenUseCase.execute()
             delay(4000)
             _modelSplashState.value = SplashState.LightFinderCamera

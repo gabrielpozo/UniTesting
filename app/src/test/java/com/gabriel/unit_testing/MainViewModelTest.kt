@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
@@ -15,6 +16,7 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
+@ExperimentalCoroutinesApi
 class MainViewModelTest {
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -25,7 +27,6 @@ class MainViewModelTest {
     @Mock
     lateinit var observerStateModel: Observer<MainViewModel.SplashState>
 
-    val testDispatcher = TestCoroutineDispatcher()
 
     @get:Rule
     val coroutinesTestRule = CoroutinesTestRule()
@@ -36,7 +37,7 @@ class MainViewModelTest {
     fun setUp() {
         vm = MainViewModel(
             getBearerTokenUseCase,
-            Dispatchers.Unconfined
+            coroutinesTestRule.testDispatcher
         )
     }
 
@@ -53,15 +54,14 @@ class MainViewModelTest {
 
     @Test
     fun `when requesting bearer token, camera light-finder event is sent`() = runBlockingTest {
-        // testDispatcher.runBlockingTest {
         vm.modelSplashState.observeForever(observerStateModel)
 
         vm.onRetrieveBearerToken()
-        advanceTimeBy(4000L)
+        advanceTimeBy(5_000)
 
         verify(observerStateModel).onChanged(
             MainViewModel.SplashState.LightFinderCamera
         )
-        //  }
+
     }
 }
